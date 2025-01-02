@@ -1,16 +1,15 @@
-default: &defaul
+default: &default
   adapter: postgresql
   encoding: unicode
-  host: db
-  username: postgres
-  password: password
   pool: 5
+  username: <%= ENV.fetch("POSTGRES_USER") { "postgres" } %>
+  password: <%= ENV.fetch("POSTGRES_PASSWORD") { "postgres" } %>
+  host: <%= ENV.fetch("POSTGRES_HOST") { "db" } %>
 
 development:
   <<: *default
-  database: db_api_development
-
+  database: 3clicks_db_development
 
 test:
   <<: *default
-  database: db_api_testt
+  database: 3clicks_db_test
