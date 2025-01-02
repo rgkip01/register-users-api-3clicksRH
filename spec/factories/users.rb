@@ -1,8 +1,8 @@
 FactoryBot.define do
   factory :user do
-    name { "MyString" }
-    email { "MyString" }
-    document { "MyString" }
-    date_of_birth { "2025-01-02" }
+    name { Faker::Name.name }
+    email { Faker::Internet.email }
+    document { Faker::Number.number(digits: 11) }
+    date_of_birth { Faker::Date.birthday(min_age: 18, max_age: 70) }
   end
 end
