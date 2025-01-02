@@ -1,0 +1,34 @@
+version: '3.7'
+
+services:
+  api:
+    build:
+      context: .
+      target: Release
+      dockerfile: Dockerfile
+    entrypoint: "sh docker-entrypoint.sh"
+    command: 'rails server -b 0.0.0.0 -p 3000'
+    env_file: .env.docker
+    volumes:
+      - .:/usr/src/app
+      - bundle_data:/usr/local/bundle
+    ports:
+      - 3000:3000
+    depends_on:
+      - db
+    stdin_open: true
+    tty: true
+  
+  db:
+    image: postgres:13
+    volumes:
+      - db_data:/var/lib/postgresql
+    ports:
+      - "5432:5432"
+    environment:
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: postgres
+
+volumes:
+  bundle_data:
+  db_data:
