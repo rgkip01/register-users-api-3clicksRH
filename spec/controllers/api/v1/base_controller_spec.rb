@@ -3,7 +3,7 @@
 require 'rails_helper'
 
 RSpec.describe Api::V1::BaseController, type: :controller do
-  controller(Api::V1::BaseController) do
+  controller(described_class) do
     def test_action
       render json: { message: 'Authorized' }
     end
