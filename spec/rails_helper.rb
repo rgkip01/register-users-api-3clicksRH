@@ -27,6 +27,10 @@ require 'rspec/rails'
 
 # Checks for pending migrations and applies them before tests are run.
 # If you are not using ActiveRecord, you can remove these lines.
+
+# Reload all routes
+Rails.application.reload_routes!
+
 begin
   ActiveRecord::Migration.maintain_test_schema!
 rescue ActiveRecord::PendingMigrationError => e
