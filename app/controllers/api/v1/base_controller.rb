@@ -1,12 +1,15 @@
+# frozen_string_literal: true
+
 module Api
   module V1
-    class BaseController < ActionController::Api
+    class BaseController < ActionController::API
       before_action :authorize_request
+      rescue_from StandardError, with: :handle_standard_error
 
       private 
 
       def authorize_request
-        header = request.header['Authorization']
+        header = request.headers['Authorization']
         header = header.split(' ').last if header
 
         begin
@@ -17,6 +20,10 @@ module Api
         rescue JWT::DecodeError => e
           render json: { errors: 'Invalid token'}
         end
+      end
+
+      def handle_standard_error(error)
+        render json: { error: error.message }, status: :unauthorized
       end
     end
   end
