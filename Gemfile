@@ -2,6 +2,7 @@ source "https://rubygems.org"
 
 ruby "3.2.2"
 
+gem 'fast_jsonapi'
 gem "rails", "~> 7.1.5", ">= 7.1.5.1"
 gem "sprockets-rails"
 gem "pg", "~> 1.1"
