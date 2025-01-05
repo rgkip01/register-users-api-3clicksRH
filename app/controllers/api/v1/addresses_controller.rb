@@ -42,9 +42,8 @@ module Api
 
       def set_user
         @user = User.find(params[:user_id])
-        unless @user == @current_user
-          render json: { errors: 'You are not authorized to access this resource' }, status: :forbidden
-        end
+      rescue ActiveRecord::RecordNotFound
+        render json: { errors: "Couldn't find User with 'id'=#{params[:user_id]}" }, status: :not_found
       end
 
       def set_address

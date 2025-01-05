@@ -5,7 +5,7 @@ require 'rails_helper'
 RSpec.describe Api::V1::AddressesController, type: :controller do
   let!(:user) { create(:user) }
   let!(:address) { create(:address, user: user) }
-  let(:valid_token) { JsonWebToken.encode(user_id: user.id) }
+  let(:valid_token) { ENV['JWT_SECRET'] }
 
   before do
     request.headers['Authorization'] = "Bearer #{valid_token}"
@@ -23,7 +23,20 @@ RSpec.describe Api::V1::AddressesController, type: :controller do
     context 'with valid attributes' do
       it 'creates a new address' do
         expect do
-          post :create, params: { user_id: user.id, data: { type: 'addresses', attributes: { street: 'New Street', city: 'New City', state: 'NS', zip_code: '12345-678', country: 'New Country' } } }, as: :json
+          post :create, 
+          params: { 
+            user_id: user.id,
+            data: { 
+              type: 'addresses',
+              attributes: { 
+                street: 'New Street',
+                city: 'New City',
+                state: 'NS',
+                zip_code: '12345-678',
+                country: 'New Country' 
+              } 
+            }
+          }, as: :json
         end.to change(Address, :count).by(1)
         expect(response).to have_http_status(:created)
         expect(JSON.parse(response.body)['data']['attributes']['street']).to eq('New Street')

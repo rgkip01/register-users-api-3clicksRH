@@ -6,24 +6,21 @@ module Api::V1
     rescue_from StandardError, with: :handle_standard_error
     rescue_from ActiveRecord::RecordNotFound, with: :record_not_found
 
-    private 
+    private
 
     def authorize_request
       header = request.headers['Authorization']
       header = header.split(' ').last if header
-      
-      begin
-        @decoded = JsonWebToken.decode(header)
-        @current_user = User.find(@decoded[:user_id])
-      rescue ActiveRecord::RecordNotFound => e
-        render json: { errors: e.message }, status: :unauthorized
-      rescue JWT::DecodeError => e
-        render json: { errors: 'Invalid token'}
+
+      expected_token = ENV['JWT_SECRET'] # Token fixo definido no backend
+
+      unless header == expected_token
+        render json: { errors: 'Unauthorized' }, status: :unauthorized
       end
     end
-    
+
     def handle_standard_error(error)
-      render json: { error: error.message }, status: :unauthorized
+      render json: { error: error.message }, status: :internal_server_error
     end
 
     def record_not_found(exception)

@@ -4,8 +4,10 @@ require 'rails_helper'
 
 RSpec.describe Api::V1::UsersController, type: :controller do
   let!(:user) { create(:user) }
+  let!(:user2) { create(:user) }
   let!(:addresses) { create_list(:address, 2, user: user) }
-  let(:valid_token) { JsonWebToken.encode(user_id: user.id) }
+  let!(:address) {create(:address, user: user2)}
+  let(:valid_token) { ENV['JWT_SECRET'] }
   let(:invalid_token) { 'invalid.token.here' }
 
   let(:valid_attributes) do
@@ -41,6 +43,35 @@ RSpec.describe Api::V1::UsersController, type: :controller do
 
   before do
     request.headers['Authorization'] = "Bearer #{valid_token}"
+  end
+
+  describe 'GET #index' do
+    context 'when there are users' do
+      it 'returns a list of users with addresses' do
+        binding.pry
+        get :index
+
+        expect(response).to have_http_status(:ok)
+        parsed_response = JSON.parse(response.body)
+        
+        expect(parsed_response['data'].size).to eq(2)
+
+        user_ids = parsed_response['data'].map { |u| u['id'].to_i }
+        expect(user_ids).to include(user.id, user2.id)
+      end
+    end
+
+    context 'when there are no users' do
+      it 'returns an empty list' do
+        User.destroy_all
+
+        get :index
+
+        expect(response).to have_http_status(:ok)
+        parsed_response = JSON.parse(response.body)
+        expect(parsed_response['data']).to be_empty
+      end
+    end
   end
 
   describe 'GET #show' do

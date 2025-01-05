@@ -13,10 +13,8 @@ RSpec.describe Api::V1::BaseController, type: :controller do
     routes.draw { get 'test_action' => 'api/v1/base#test_action' }
   end
 
-  let(:user) { create(:user) }
-  let(:valid_token) { JsonWebToken.encode(user_id: user.id) }
+  let(:valid_token) { ENV['JWT_SECRET'] }
   let(:invalid_token) { 'invalid.token.here' }
-  let(:non_existent_user_token) { JsonWebToken.encode(user_id: 777) }
 
   describe '#authorize_request' do
     context 'with a valid token' do
@@ -33,18 +31,17 @@ RSpec.describe Api::V1::BaseController, type: :controller do
       it 'returns unauthorized status' do
         get :test_action
         expect(response).to have_http_status(:unauthorized)
-        expect(JSON.parse(response.body)['error']).to eq('Token ausente')
+        expect(JSON.parse(response.body)['errors']).to eq('Unauthorized')
       end
     end
 
-    context 'with a token for a non-existent user' do
+    context 'with an invalid token' do
       it 'returns unauthorized status' do
-        request.headers['Authorization'] = "Bearer #{non_existent_user_token}"
+        request.headers['Authorization'] = "Bearer #{invalid_token}"
 
         get :test_action
-
         expect(response).to have_http_status(:unauthorized)
-        expect(JSON.parse(response.body)['errors']).to match(/Couldn't find User/)
+        expect(JSON.parse(response.body)['errors']).to eq('Unauthorized')
       end
     end
   end
