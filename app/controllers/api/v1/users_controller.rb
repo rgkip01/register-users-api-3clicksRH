@@ -1,6 +1,7 @@
 # frozen_string_literal: true
 
-module Api::V1
+module Api
+  module V1
   class UsersController < BaseController
     before_action :authorize_request, except: [:create]
     before_action :set_user, only: [:show, :update, :destroy]
@@ -90,5 +91,6 @@ module Api::V1
     rescue ActiveRecord::RecordInvalid => e
       render json: { errors: e.record.errors.full_messages }, status: :unprocessable_entity
     end
+  end
   end
 end

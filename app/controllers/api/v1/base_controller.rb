@@ -1,6 +1,7 @@
 # frozen_string_literal: true
 
-module Api::V1
+module Api
+  module V1
   class BaseController < ActionController::API
     before_action :authorize_request
     rescue_from StandardError, with: :handle_standard_error
@@ -26,5 +27,6 @@ module Api::V1
     def record_not_found(exception)
       render json: { errors: exception.message }, status: :not_found
     end
+  end
   end
 end

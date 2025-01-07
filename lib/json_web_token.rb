@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 class JsonWebToken
   SECRET_KEY = ENV['JWT_SECRET']
 
