@@ -19,6 +19,7 @@ gem 'rack-cors'
 
 group :development, :test do
   gem 'byebug'
+  gem 'cpf_cnpj'
   gem 'debug', platforms: %i[mri windows]
   gem 'factory_bot_rails'
   gem 'faker'
