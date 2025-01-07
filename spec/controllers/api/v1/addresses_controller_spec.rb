@@ -23,18 +23,18 @@ RSpec.describe Api::V1::AddressesController, type: :controller do
     context 'with valid attributes' do
       it 'creates a new address' do
         expect do
-          post :create, 
-          params: { 
+          post :create,
+          params: {
             user_id: user.id,
-            data: { 
+            data: {
               type: 'addresses',
-              attributes: { 
+              attributes: {
                 street: 'New Street',
                 city: 'New City',
                 state: 'NS',
                 zip_code: '12345-678',
-                country: 'New Country' 
-              } 
+                country: 'New Country'
+              }
             }
           }, as: :json
         end.to change(Address, :count).by(1)
@@ -52,10 +52,10 @@ RSpec.describe Api::V1::AddressesController, type: :controller do
     end
   end
 
-
   describe 'PUT #update' do
     it 'updates the address with valid attributes' do
-      put :update, params: { user_id: user.id, id: address.id, data: { type: 'addresses', attributes: { city: 'Updated City' } } }, as: :json
+      put :update,
+params: { user_id: user.id, id: address.id, data: { type: 'addresses', attributes: { city: 'Updated City' } } }, as: :json
       expect(response).to have_http_status(:ok)
       expect(JSON.parse(response.body)['data']['attributes']['city']).to eq('Updated City')
     end

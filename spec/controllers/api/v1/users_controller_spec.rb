@@ -6,7 +6,7 @@ RSpec.describe Api::V1::UsersController, type: :controller do
   let!(:user) { create(:user) }
   let!(:user2) { create(:user) }
   let!(:addresses) { create_list(:address, 2, user: user) }
-  let!(:address) {create(:address, user: user2)}
+  let!(:address) { create(:address, user: user2) }
   let(:valid_token) { ENV['JWT_SECRET'] }
   let(:invalid_token) { 'invalid.token.here' }
 
@@ -39,7 +39,6 @@ RSpec.describe Api::V1::UsersController, type: :controller do
       }
     }
   end
-  
 
   before do
     request.headers['Authorization'] = "Bearer #{valid_token}"
@@ -48,12 +47,11 @@ RSpec.describe Api::V1::UsersController, type: :controller do
   describe 'GET #index' do
     context 'when there are users' do
       it 'returns a list of users with addresses' do
-        binding.pry
         get :index
 
         expect(response).to have_http_status(:ok)
         parsed_response = JSON.parse(response.body)
-        
+
         expect(parsed_response['data'].size).to eq(2)
 
         user_ids = parsed_response['data'].map { |u| u['id'].to_i }
@@ -107,7 +105,8 @@ RSpec.describe Api::V1::UsersController, type: :controller do
   describe 'PUT #update' do
     context 'with valid attributes' do
       it 'updates the user and their addresses' do
-        put :update, params: { id: user.id, data: { type: 'users', attributes: { name: 'Rafael C. Abreu' } } }, as: :json
+        put :update, params: { id: user.id, data: { type: 'users', attributes: { name: 'Rafael C. Abreu' } } },
+                     as: :json
         expect(response).to have_http_status(:ok)
         expect(JSON.parse(response.body)['data']['attributes']['name']).to eq('Rafael C. Abreu')
       end
@@ -152,19 +151,19 @@ RSpec.describe Api::V1::UsersController, type: :controller do
   describe 'GET #search' do
     context 'when users match the query' do
       it 'returns users matching the query by name' do
-        get :search, params: { query: user.name }
+        get :search, params: { q: user.name }
         expect(response).to have_http_status(:ok)
         expect(JSON.parse(response.body)['data'].size).to eq(1)
       end
 
       it 'returns users matching the query by document' do
-        get :search, params: { query: user.document }
+        get :search, params: { q: user.document }
         expect(response).to have_http_status(:ok)
         expect(JSON.parse(response.body)['data'].size).to eq(1)
       end
 
       it 'returns users matching the query by date of birth' do
-        get :search, params: { query: user.date_of_birth.to_s }
+        get :search, params: { q: user.date_of_birth.to_s }
         expect(response).to have_http_status(:ok)
         expect(JSON.parse(response.body)['data'].size).to eq(1)
       end
@@ -172,7 +171,7 @@ RSpec.describe Api::V1::UsersController, type: :controller do
 
     context 'when the query is not a valid date' do
       it 'does not raise an error and returns no users for invalid date format' do
-        get :search, params: { query: 'invalid-date' }
+        get :search, params: { q: 'invalid-date' }
         expect(response).to have_http_status(:ok)
         expect(JSON.parse(response.body)['data']).to be_empty
       end

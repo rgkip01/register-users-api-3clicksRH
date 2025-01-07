@@ -14,9 +14,9 @@ module Api::V1
 
       expected_token = ENV['JWT_SECRET'] # Token fixo definido no backend
 
-      unless header == expected_token
-        render json: { errors: 'Unauthorized' }, status: :unauthorized
-      end
+      return if header == expected_token
+
+      render json: { errors: 'Unauthorized' }, status: :unauthorized
     end
 
     def handle_standard_error(error)

@@ -5,7 +5,7 @@ module Api::V1
     before_action :authorize_request, except: [:create]
     before_action :set_user, only: [:show, :update, :destroy]
 
-    def index 
+    def index
       users = User.all
       render json: UserSerializer.new(users).serialized_json, status: :ok
     end
@@ -17,16 +17,15 @@ module Api::V1
         render json: { errors: 'User not found' }, status: :not_found
       end
     end
-    
 
     def create
       user = User.new(user_params)
-      
+
       if user.save
         create_addresses(user, address_params)
         render json: UserSerializer.new(user).serialized_json, status: :created
       else
-        render json: {errors: user.errors.full_messages }, status: :unprocessable_entity
+        render json: { errors: user.errors.full_messages }, status: :unprocessable_entity
       end
     end
 
@@ -37,7 +36,7 @@ module Api::V1
         render json: { errors: @user.errors.full_messages }, status: :unprocessable_entity
       end
     end
-    
+
     def destroy
       @user.destroy
 
@@ -48,11 +47,11 @@ module Api::V1
       query = params[:q]
 
       users = User.where(
-        'name ILIKE :query OR document ILIKE :query OR date_of_birth = :date_query',
+        'name ILIKE :query OR document ILIKE :query OR date_of_birth::text ILIKE :query',
         query: "%#{query}%",
         date_query: valid_date?(query) ? query : nil
       )
-    
+
       render json: UserSerializer.new(users).serialized_json
     end
 
@@ -82,7 +81,7 @@ module Api::V1
       params[:addresses] || []
     end
 
-    def create_addresses(user, addresses)
+    def create_addresses(user, _addresses)
       return [] unless params.dig(:data, :relationships, :addresses, :data)
 
       params[:data][:relationships][:addresses][:data].map do |address|

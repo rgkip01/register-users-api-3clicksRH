@@ -37,7 +37,6 @@ rescue ActiveRecord::PendingMigrationError => e
   abort e.to_s.strip
 end
 RSpec.configure do |config|
-
   # config to use factory in tests
   config.include FactoryBot::Syntax::Methods
 
