@@ -27,6 +27,7 @@ module Api
 
       def update
         if @address.update(address_params)
+          Rails.logger.info("Recebendo requisição de atualização: #{params.inspect}")
           render json: AddressSerializer.new(@address).serialized_json
         else
           render json: { errors: @address.errors.full_messages }, status: :unprocessable_entity

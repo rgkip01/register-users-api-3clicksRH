@@ -12,7 +12,7 @@ module Api::V1
 
     def show
       if @user
-        render json: UserSerializer.new(@user).serialized_json
+        render json: UserSerializer.new(@user, include: [:addresses]).serialized_json
       else
         render json: { errors: 'User not found' }, status: :not_found
       end
@@ -32,14 +32,12 @@ module Api::V1
 
     def update
       if @user.update(user_params)
-        @user.addresses.destroy_all
-        create_addresses(@user, address_params)
         render json: UserSerializer.new(@user).serialized_json
       else
         render json: { errors: @user.errors.full_messages }, status: :unprocessable_entity
       end
     end
-
+    
     def destroy
       @user.destroy
 
@@ -47,7 +45,7 @@ module Api::V1
     end
 
     def search
-      query = params[:query]
+      query = params[:q]
 
       users = User.where(
         'name ILIKE :query OR document ILIKE :query OR date_of_birth = :date_query',
